@@ -9,7 +9,7 @@ import { protfolio } from "./model/protfolio";
 let newI; /* timeframe represented  */
 const app = createExpressServer({
   controllers: [actionControllers, getDataControllers],
-  cors: true
+  cors: true /*diffrent header browser */
 });
 
 var server = require('http').createServer(app);
@@ -27,7 +27,7 @@ const generate = async function () {
     await cscoStock.save();
     const facebookStock = new Stock({ sName: 'FB', openPrice: 163, currentPrice: 163, changePercent: 0 })
     await facebookStock.save();
-    const googStock = new Stock({ sName: 'GOOL', openPrice: 1172, currentPrice: 1172, changePercent: 0 })
+    const googStock = new Stock({ sName: 'GOOG', openPrice: 1172, currentPrice: 1172, changePercent: 0 })
     await googStock.save();
     const ebayStock = new Stock({ sName: 'EBAY', openPrice: 35, currentPrice: 35, changePercent: 0 })
     await ebayStock.save();
@@ -44,18 +44,24 @@ const NewPrice = async function () {
       factor = factor * -1
     }
     let rnadonPrice: number = element.currentPrice + factor;
-    //let randomPrecent: number = (element.currentPrice - element.openPrice) / element.openPrice
     let randomPrecent: number = (rnadonPrice - element.openPrice) / element.openPrice
-    let tempProtfolioStock = await protfolio.findOne({ where: { sName: element.sName } })
+    updateNewPrice (rnadonPrice , randomPrecent , element)
+  });
+    emitNewPrice()
+  }
+
+  const updateNewPrice=async function (rnadonPrice:number ,randomPrecent:number ,element:Stock )
+  {
     await Stock.update({ currentPrice: rnadonPrice, changePercent: randomPrecent }, { where: { sName: element.sName } })
+    let tempProtfolioStock = await protfolio.findOne({ where: { sName: element.sName } })
     if (tempProtfolioStock != null) {
       let newHoldinigValue: number = rnadonPrice * tempProtfolioStock.quantity
-      //let newProfit: number = (rnadonPrice * tempProtfolioStock.quantity) - (tempProtfolioStock.totalBuyPrice * tempProtfolioStock.quantity   )
       let newProfit = newHoldinigValue - tempProtfolioStock.totalBuyPrice
       await protfolio.update({ currentPrice: rnadonPrice, holdingValue: newHoldinigValue, profit: newProfit }, { where: { sName: element.sName } })
     }
-  })
+  }
 
+  const emitNewPrice = async function () {
   const newPrices = await Stock.findAll()
   const newProtfolio = await protfolio.findAll()
   io.emit('price-update', newPrices);

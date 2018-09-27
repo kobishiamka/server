@@ -1,5 +1,5 @@
 
-import {Table, Column, Model, HasMany, PrimaryKey, DataType, CreatedAt} from 'sequelize-typescript';
+import {Table, Column, Model, PrimaryKey, DataType, CreatedAt} from 'sequelize-typescript';
  
 @Table
 export class history extends Model<history> {

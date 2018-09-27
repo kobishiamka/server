@@ -1,5 +1,5 @@
 
-import {Table, Column, Model, HasMany, PrimaryKey, DataType} from 'sequelize-typescript';
+import {Table, Column, Model, PrimaryKey, DataType} from 'sequelize-typescript';
  
 @Table
 export class protfolio extends Model<protfolio> {

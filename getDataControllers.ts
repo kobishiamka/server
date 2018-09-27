@@ -1,6 +1,6 @@
 
 import "reflect-metadata";
-import { Controller, Param, Body, Get, Post, Put, Delete, Res } from "routing-controllers";
+import { Controller, Body, Get, Res } from "routing-controllers";
 import { Response } from 'express'
 import { Stock } from "./model/stock";
 import { protfolio } from "./model/protfolio";

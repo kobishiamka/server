@@ -1,6 +1,6 @@
 
 import "reflect-metadata";
-import { Controller, Param, Body, Get, Post, Put, Delete, Res } from "routing-controllers";
+import { Controller, Body, Post, Res } from "routing-controllers";
 import { Response } from 'express'
 import { protfolio } from "./model/protfolio";
 import { history } from "./model/history";
@@ -22,13 +22,10 @@ export class actionControllers {
       notInProtfolio = false
       let newQuantity: number = (parseInt(body.quantity) + result.quantity)
       let newTotalBuyPrice: number = (result.totalBuyPrice + (parseInt(body.quantity) * parseInt(body.currentPrice)))
-      
       let newHoldinigValue: number = newQuantity * parseInt(body.currentPrice)
       let newProfit: number = (newHoldinigValue) - (newTotalBuyPrice)
       protfolio.update({ currentPrice: body.currentPrice, quantity: newQuantity, totalBuyPrice: newTotalBuyPrice, holdingValue: newHoldinigValue, profit: newProfit }, { where: { sName: body.sName } })
-
     }
-
     //handel scenario of new stock in protfolio 
     if (notInProtfolio) {
       const newStockinProtfolio = new protfolio({ sName: body.sName, currentPrice: parseInt(body.currentPrice), quantity: parseInt(body.quantity), totalBuyPrice: tempTotalBuyPrice, holdingValue: tempHoldingValue, profit: tempProfit })
@@ -45,7 +42,7 @@ export class actionControllers {
     let crossLimit: boolean = false
     const tempTotalBuyPrice: number = parseInt(body.currentPrice) * parseInt(body.quantity)
     let result = await protfolio.find({ where: { sName: body.sName } })
-    let profitPerIter: number = ( result.profit / result.quantity) * body.quantity
+    let profitPerIter: number = body.quantity *  (body.currentPrice - (result.totalBuyPrice / result.quantity))
     
     if (result != null) {
       if (result.quantity === parseInt(body.quantity)) {
